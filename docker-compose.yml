@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: gamedb
+      POSTGRES_USER: gameuser
+      POSTGRES_PASSWORD: gamepass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  laravel:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.http
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/var/www/html
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_DATABASE: gamedb
+      DB_USERNAME: gameuser
+      DB_PASSWORD: gamepass
+    depends_on:
+      - postgres
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./frontend/dist:/usr/share/nginx/html
+    depends_on:
+      - laravel
+
+volumes:
+  postgres_data:

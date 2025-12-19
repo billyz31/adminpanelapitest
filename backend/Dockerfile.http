@@ -1,0 +1,40 @@
+FROM php:8.4-cli
+
+# 安裝系統依賴和PHP擴展
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    libpq-dev \
+    libicu-dev \
+    && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd opcache intl
+
+# 安裝Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# 複製 OPcache 優化配置
+COPY opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+# 設置工作目錄
+WORKDIR /var/www/html
+
+# 配置 Git 安全目錄
+RUN git config --global --add safe.directory /var/www/html
+
+# 複製應用代碼
+COPY . /var/www/html
+
+# 安裝依賴
+RUN composer install --no-dev --optimize-autoloader
+
+# 設置權限
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
+
+# 使用 Laravel 內置服務器
+CMD php artisan serve --host=0.0.0.0 --port=8000
