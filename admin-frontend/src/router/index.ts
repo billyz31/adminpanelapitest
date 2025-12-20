@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login.vue'
-import Register from '../views/Register.vue'
+import Dashboard from '../views/Dashboard.vue'
 import { useAuthStore } from '../stores/auth'
 
 const router = createRouter({
@@ -16,19 +16,10 @@ const router = createRouter({
       component: Login
     },
     {
-      path: '/register',
-      name: 'register',
-      component: Register
-    },
-    {
-      path: '/lobby',
-      name: 'lobby',
-      component: () => import('../views/Lobby.vue')
-    },
-    {
-      path: '/slot',
-      name: 'slot',
-      component: () => import('../views/SlotGame.vue')
+      path: '/dashboard',
+      name: 'dashboard',
+      component: Dashboard,
+      meta: { requiresAuth: true, requiresAdmin: true }
     }
   ]
 })
@@ -47,6 +38,13 @@ router.beforeEach(async (to, _from, next) => {
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login')
+    return
+  }
+
+  if (to.meta.requiresAdmin && !authStore.isAdmin) {
+    // If user is authenticated but not admin, logout or show error
+    await authStore.logout()
+    next('/login') 
     return
   }
 

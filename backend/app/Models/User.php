@@ -48,6 +48,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'balance' => 'decimal:4',
+            'is_active' => 'boolean',
         ];
     }
 }

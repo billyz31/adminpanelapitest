@@ -29,4 +29,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/slot/spin', [SlotController::class, 'spin']);
 });
 
+// 管理員路由
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/users', [AdminController::class, 'getUsers']);
+    Route::get('/stats', [AdminController::class, 'getSystemStats']);
+});
+
 
