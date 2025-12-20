@@ -5,6 +5,7 @@ services:
       POSTGRES_DB: gamedb
       POSTGRES_USER: gameuser
       POSTGRES_PASSWORD: gamepass
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
