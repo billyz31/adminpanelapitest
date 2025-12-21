@@ -37,4 +37,4 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
 # 使用 Laravel 內置服務器
-CMD php artisan serve --host=0.0.0.0 --port=8000
+CMD sh -c "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"
