@@ -23,12 +23,14 @@ const router = createRouter({
     {
       path: '/lobby',
       name: 'lobby',
-      component: () => import('../views/Lobby.vue')
+      component: () => import('../views/Lobby.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/slot',
       name: 'slot',
-      component: () => import('../views/SlotGame.vue')
+      component: () => import('../views/SlotGame.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })
