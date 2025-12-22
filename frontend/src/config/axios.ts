@@ -7,6 +7,6 @@ axios.defaults.headers.put['Content-Type'] = 'application/json'
 axios.defaults.headers.patch['Content-Type'] = 'application/json'
 
 // Set base URL
-axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || 'https://api.gofun.cloud'
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || ''
 
 export default axios

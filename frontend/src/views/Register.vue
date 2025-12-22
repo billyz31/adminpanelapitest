@@ -20,11 +20,6 @@
           <el-input v-model="form.password_confirmation" type="password" placeholder="請再次輸入密碼" show-password />
         </el-form-item>
         
-        <!-- Turnstile Widget -->
-        <div class="turnstile-container">
-          <div class="cf-turnstile" :data-sitekey="siteKey" data-callback="onRegisterTurnstileSuccess"></div>
-        </div>
-
         <el-form-item>
           <el-button type="primary" @click="handleRegister" :loading="loading" style="width: 100%">註冊</el-button>
         </el-form-item>
@@ -56,19 +51,7 @@ const form = ref({
 })
 
 onMounted(() => {
-  // Ensure Turnstile renders
-  if (window.turnstile) {
-    window.turnstile.render('.cf-turnstile', {
-      sitekey: siteKey,
-      callback: (token: string) => {
-        turnstileToken.value = token
-      }
-    })
-  } else {
-      (window as any).onRegisterTurnstileSuccess = (token: string) => {
-          turnstileToken.value = token
-      }
-  }
+  // No explicit initialization needed
 })
 
 const rules = ref<FormRules>({
