@@ -7,17 +7,25 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Rules\Turnstile;
 
 class AuthController extends Controller
 {
     // 註冊
     public function register(Request $request)
     {
-        $request->validate([
+        $rules = [
             'username' => 'required|string|unique:users',
             'name' => 'required|string',
             'password' => 'required|string|min:6|confirmed',
-        ]);
+        ];
+
+        // Only apply Turnstile validation if key is configured
+        if (config('services.turnstile.secret')) {
+            $rules['cf-turnstile-response'] = ['required', new Turnstile];
+        }
+
+        $request->validate($rules);
 
         return DB::transaction(function () use ($request) {
             $user = User::create([

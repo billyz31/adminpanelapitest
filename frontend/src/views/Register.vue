@@ -104,19 +104,11 @@ const rules = ref<FormRules>({
 const handleRegister = async () => {
   if (!registerForm.value) return
   
-  if (!turnstileToken.value && siteKey) {
-     ElMessage.warning('請完成驗證')
-     return
-  }
-
   await registerForm.value.validate(async (valid) => {
     if (valid) {
       loading.value = true
       try {
-        await authStore.register({
-            ...form.value,
-            'cf-turnstile-response': turnstileToken.value
-        })
+        await authStore.register(form.value)
         ElMessage.success('註冊成功')
       } catch (error: any) {
         ElMessage.error(error.response?.data?.message || '註冊失敗')
@@ -124,8 +116,6 @@ const handleRegister = async () => {
         if (error.response?.data?.errors) {
             console.log(error.response.data.errors)
         }
-        if (window.turnstile) window.turnstile.reset()
-        turnstileToken.value = ''
       } finally {
         loading.value = false
       }
@@ -135,12 +125,6 @@ const handleRegister = async () => {
 </script>
 
 <style scoped>
-.turnstile-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
 .register-container {
   display: flex;
   justify-content: center;
