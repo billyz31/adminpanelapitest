@@ -141,8 +141,6 @@ const handleRegister = async () => {
     margin-bottom: 20px;
 }
 
-
-<style scoped>
 .register-container {
   display: flex;
   justify-content: center;

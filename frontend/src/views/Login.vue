@@ -96,8 +96,6 @@ const handleLogin = async () => {
     margin-bottom: 20px;
 }
 
-
-<style scoped>
 .login-container {
   display: flex;
   justify-content: center;

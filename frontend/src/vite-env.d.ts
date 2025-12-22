@@ -4,3 +4,11 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+interface Window {
+  turnstile: {
+    render: (selector: string | HTMLElement, options: any) => void;
+    reset: (widgetId?: string) => void;
+    getResponse: (widgetId?: string) => string | undefined;
+  };
+}
