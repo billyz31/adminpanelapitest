@@ -40,37 +40,47 @@ class AuthController extends Controller
     // 登入
     public function login(Request $request)
     {
-        $rules = [
-            'username' => 'required|string',
-            'password' => 'required|string',
-        ];
+        try {
+            $rules = [
+                'username' => 'required|string',
+                'password' => 'required|string',
+            ];
 
-        // Only apply Turnstile validation if key is configured
-        if (config('services.turnstile.secret')) {
-            $rules['cf-turnstile-response'] = ['required', new Turnstile];
-        }
+            // Only apply Turnstile validation if key is configured
+            if (config('services.turnstile.secret')) {
+                $rules['cf-turnstile-response'] = ['required', new Turnstile];
+            }
 
-        $request->validate($rules);
+            $request->validate($rules);
 
-        $user = User::where('username', $request->username)->first();
+            $user = User::where('username', $request->username)->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'username' => ['帳號或密碼錯誤'],
+            if (! $user || ! Hash::check($request->password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'username' => ['帳號或密碼錯誤'],
+                ]);
+            }
+            
+            if (! $user->is_active) {
+                return response()->json(['message' => '帳號已被停用'], 403);
+            }
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => '登入成功',
+                'user' => $user,
+                'token' => $token,
             ]);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Login error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Login failed: ' . $e->getMessage(),
+                'error' => $e->getMessage()
+            ], 500);
         }
-        
-        if (! $user->is_active) {
-            return response()->json(['message' => '帳號已被停用'], 403);
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => '登入成功',
-            'user' => $user,
-            'token' => $token,
-        ]);
     }
 
     // 登出
