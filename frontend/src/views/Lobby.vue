@@ -146,6 +146,13 @@ onMounted(() => {
   transform: translateY(-5px);
 }
 
+.game-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .game-card :deep(.el-card__body) {
   padding: 0;
   position: absolute;
@@ -153,53 +160,14 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.card-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  width: 100%;
-  padding: 10px;
-}
-
-.game-icon {
-  font-size: 40px;
-  margin-bottom: 10px;
-}
-
-.game-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  white-space: nowrap;
-}
-
-.game-subtitle {
-  font-size: 14px;
-  color: #909399;
 }
 
 .maintenance {
   cursor: not-allowed;
-  opacity: 0.7;
-  background-color: #f5f7fa;
+  filter: grayscale(100%);
 }
 
-@media (max-width: 480px) {
-  .game-icon {
-    font-size: 30px;
-  }
-  .game-title {
-    font-size: 16px;
-  }
-  .game-subtitle {
-    font-size: 12px;
-  }
+.maintenance .game-image {
+  opacity: 0.7;
 }
 </style>
