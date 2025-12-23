@@ -126,6 +126,19 @@ onMounted(() => {
   gap: 15px;
   align-items: center;
 }
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
+  }
+  .user-info {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
 .game-card {
   margin-bottom: 20px;
   text-align: center;

@@ -132,7 +132,8 @@ onMounted(() => {
 }
 
 .game-card {
-  width: 500px;
+  width: 95%;
+  max-width: 500px;
   background-color: #ecf0f1;
 }
 

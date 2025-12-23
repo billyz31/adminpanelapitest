@@ -110,11 +110,13 @@ const handleRegister = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #f0f2f5;
+  padding: 20px;
 }
 .register-card {
-  width: 400px;
+  width: 100%;
+  max-width: 500px;
 }
 .card-header {
   text-align: center;
