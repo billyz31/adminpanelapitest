@@ -13,6 +13,7 @@ class AuthController extends Controller
     // 註冊
     public function register(Request $request)
     {
+        \Illuminate\Support\Facades\Log::info('Register endpoint hit', $request->all());
         try {
             $rules = [
                 'username' => 'required|string|unique:users',

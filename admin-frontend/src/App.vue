@@ -1,16 +1,17 @@
-<script setup lang="ts">
-import ApiTester from './components/ApiTester.vue'
-</script>
-
 <template>
   <router-view></router-view>
-  <ApiTester />
 </template>
 
+<script setup lang="ts">
+// App root
+</script>
+
 <style>
+/* Global styles */
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  font-family: 'Inter', sans-serif;
+  background-color: #f5f7fa;
 }
 </style>

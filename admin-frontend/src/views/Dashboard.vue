@@ -1,334 +1,329 @@
 <template>
-  <div class="admin-dashboard">
-    <el-container>
-      <el-header class="header">
-        <div class="logo">Admin Panel</div>
-        <div class="header-right">
-          <span>Welcome, Admin</span>
-          <el-button type="danger" size="small" @click="logout">Logout</el-button>
-        </div>
-      </el-header>
-      
-      <el-main>
-        <!-- Stats Cards -->
-        <el-row :gutter="20" class="mb-4">
-          <el-col :span="6">
-            <el-card shadow="hover">
-              <template #header>Total Users</template>
-              <div class="stat-value">{{ stats.total_users || 0 }}</div>
-            </el-card>
-          </el-col>
-          <el-col :span="6">
-            <el-card shadow="hover">
-              <template #header>Total Deposits</template>
-              <div class="stat-value text-success">${{ stats.total_deposits || 0 }}</div>
-            </el-card>
-          </el-col>
-          <el-col :span="6">
-            <el-card shadow="hover">
-              <template #header>Total Withdrawals</template>
-              <div class="stat-value text-danger">${{ stats.total_withdrawals || 0 }}</div>
-            </el-card>
-          </el-col>
-          <el-col :span="6">
-            <el-card shadow="hover">
-              <template #header>Game Rounds</template>
-              <div class="stat-value">{{ stats.total_game_rounds || 0 }}</div>
-            </el-card>
-          </el-col>
-        </el-row>
-
-        <!-- User Management -->
-        <el-card class="box-card">
+  <div class="dashboard-container">
+    <h1>Dashboard</h1>
+    
+    <!-- System Overview -->
+    <h2 class="section-title">System Overview</h2>
+    <el-row :gutter="20">
+      <el-col :span="6">
+        <el-card shadow="hover">
           <template #header>
             <div class="card-header">
-              <span>User Management</span>
-              <div class="search-box">
-                <el-input
-                  v-model="searchQuery"
-                  placeholder="Search username/email..."
-                  clearable
-                  @clear="handleSearch"
-                  @keyup.enter="handleSearch"
-                >
-                  <template #append>
-                    <el-button @click="handleSearch">Search</el-button>
-                  </template>
-                </el-input>
-              </div>
+              <span>Total Users</span>
             </div>
           </template>
+          <div class="card-value">{{ stats.system.total_users }}</div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span>System Float</span>
+            </div>
+          </template>
+          <div class="card-value">${{ formatMoney(stats.system.total_balance) }}</div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span>System Status</span>
+            </div>
+          </template>
+          <div class="card-value status-ok">Healthy</div>
+        </el-card>
+      </el-col>
+    </el-row>
 
-          <el-table :data="users" v-loading="loading" style="width: 100%" border stripe>
-            <el-table-column prop="id" label="ID" width="60" />
-            <el-table-column prop="username" label="Username" />
-            <el-table-column prop="name" label="Name" />
-            <el-table-column prop="email" label="Email" />
-            <el-table-column prop="balance" label="Balance" sortable>
-              <template #default="scope">
-                <span class="balance">${{ Number(scope.row.balance).toFixed(2) }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="is_active" label="Status" width="100">
-              <template #default="scope">
-                <el-tag :type="scope.row.is_active ? 'success' : 'danger'">
-                  {{ scope.row.is_active ? 'Active' : 'Banned' }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="created_at" label="Joined" width="180">
-              <template #default="scope">
-                {{ new Date(scope.row.created_at).toLocaleString() }}
-              </template>
-            </el-table-column>
-            <el-table-column label="Actions" width="250" fixed="right">
-              <template #default="scope">
-                <el-button-group>
-                  <el-button 
-                    size="small" 
-                    type="primary" 
-                    @click="openTransactionDialog(scope.row, 'deposit')"
-                  >
-                    Deposit
-                  </el-button>
-                  <el-button 
-                    size="small" 
-                    type="warning" 
-                    @click="openTransactionDialog(scope.row, 'withdraw')"
-                  >
-                    Withdraw
-                  </el-button>
-                  <el-button 
-                    size="small" 
-                    :type="scope.row.is_active ? 'danger' : 'success'"
-                    @click="toggleUserStatus(scope.row)"
-                  >
-                    {{ scope.row.is_active ? 'Ban' : 'Unban' }}
-                  </el-button>
-                </el-button-group>
-              </template>
-            </el-table-column>
-          </el-table>
-
-          <div class="pagination-container">
-            <el-pagination
-              v-model:current-page="currentPage"
-              v-model:page-size="pageSize"
-              :total="totalUsers"
-              layout="total, prev, pager, next"
-              @current-change="handlePageChange"
-            />
+    <!-- Today's Statistics -->
+    <h2 class="section-title">Today's Statistics</h2>
+    <el-row :gutter="20" v-loading="loading">
+      <el-col :span="6">
+        <el-card shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span>Total Bet</span>
+            </div>
+          </template>
+          <div class="card-value">${{ formatMoney(stats.today.total_bet) }}</div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span>Total Payout</span>
+            </div>
+          </template>
+          <div class="card-value">${{ formatMoney(stats.today.total_payout) }}</div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span>GGR</span>
+            </div>
+          </template>
+          <div class="card-value" :class="getGGRClass(stats.today.ggr)">
+            ${{ formatMoney(stats.today.ggr) }}
           </div>
         </el-card>
-      </el-main>
-    </el-container>
+      </el-col>
+      <el-col :span="6">
+        <el-card shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span>DAU</span>
+            </div>
+          </template>
+          <div class="card-value">{{ stats.today.dau }}</div>
+        </el-card>
+      </el-col>
+    </el-row>
 
-    <!-- Transaction Dialog -->
-    <el-dialog
-      v-model="transactionDialogVisible"
-      :title="transactionType === 'deposit' ? 'Manual Deposit' : 'Manual Withdrawal'"
-      width="30%"
-    >
-      <el-form :model="transactionForm" label-width="100px">
-        <el-form-item label="User">
-          <el-input v-model="selectedUser.username" disabled />
-        </el-form-item>
-        <el-form-item label="Amount">
-          <el-input-number v-model="transactionForm.amount" :min="1" :precision="2" :step="100" style="width: 100%" />
-        </el-form-item>
-        <el-form-item label="Description">
-          <el-input v-model="transactionForm.description" placeholder="Reason for adjustment" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="transactionDialogVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="submitTransaction" :loading="submitting">
-            Confirm
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
+    <!-- Charts -->
+    <el-row :gutter="20" style="margin-top: 20px;">
+      <el-col :span="16">
+        <h2 class="section-title">Revenue Trends (30 Days)</h2>
+        <el-card shadow="hover" v-loading="loadingTrends">
+          <div style="height: 400px">
+            <v-chart class="chart" :option="chartOption" autoresize />
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <h2 class="section-title">Game Distribution</h2>
+        <el-card shadow="hover" v-loading="loadingGames">
+          <div style="height: 400px">
+            <v-chart class="chart" :option="pieOption" autoresize />
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue'
-import axios from 'axios'
-import { useAuthStore } from '../stores/auth'
-import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import axios from '../config/axios'
+import { ElMessage } from 'element-plus'
 
-const authStore = useAuthStore()
-const router = useRouter()
+// ECharts
+import VChart from "vue-echarts";
+import { use } from "echarts/core";
+import { CanvasRenderer } from "echarts/renderers";
+import { LineChart, BarChart, PieChart } from "echarts/charts";
+import {
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent
+} from "echarts/components";
 
-// Data
-const users = ref<any[]>([])
-const stats = ref<any>({})
+use([
+  CanvasRenderer,
+  LineChart,
+  BarChart,
+  PieChart,
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent
+]);
+
 const loading = ref(false)
-const searchQuery = ref('')
-const currentPage = ref(1)
-const pageSize = ref(20)
-const totalUsers = ref(0)
+const loadingTrends = ref(false)
+const loadingGames = ref(false)
+const chartOption = ref({})
+const pieOption = ref({})
 
-// Transaction Dialog
-const transactionDialogVisible = ref(false)
-const transactionType = ref<'deposit' | 'withdraw'>('deposit')
-const selectedUser = ref<any>({})
-const submitting = ref(false)
-const transactionForm = reactive({
-  amount: 100,
-  description: ''
+const stats = reactive({
+  today: {
+    total_bet: 0,
+    total_payout: 0,
+    ggr: 0,
+    dau: 0
+  },
+  system: {
+    total_users: 0,
+    total_balance: 0
+  }
 })
 
-// Methods
 const fetchStats = async () => {
-  try {
-    const res = await axios.get('/api/admin/stats')
-    stats.value = res.data
-  } catch (error) {
-    console.error('Failed to fetch stats:', error)
-  }
-}
-
-const fetchUsers = async () => {
   loading.value = true
   try {
-    const res = await axios.get('/api/admin/users', {
-      params: {
-        page: currentPage.value,
-        search: searchQuery.value
+    const token = localStorage.getItem('admin_token')
+    const response = await axios.get('/api/admin/stats', {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
     })
-    users.value = res.data.data
-    totalUsers.value = res.data.total
-    pageSize.value = res.data.per_page
+    
+    // Update stats with response data
+    if (response.data) {
+      stats.today = response.data.today
+      stats.system = response.data.system
+    }
   } catch (error) {
-    ElMessage.error('Failed to fetch users')
+    console.error('Error fetching stats:', error)
+    ElMessage.error('Failed to load dashboard statistics')
   } finally {
     loading.value = false
   }
 }
 
-const handleSearch = () => {
-  currentPage.value = 1
-  fetchUsers()
-}
-
-const handlePageChange = (page: number) => {
-  currentPage.value = page
-  fetchUsers()
-}
-
-const toggleUserStatus = async (user: any) => {
-  const action = user.is_active ? 'Ban' : 'Unban'
+const fetchTrends = async () => {
+  loadingTrends.value = true
   try {
-    await ElMessageBox.confirm(
-      `Are you sure you want to ${action} user ${user.username}?`,
-      'Warning',
-      {
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
+    const token = localStorage.getItem('admin_token')
+    const response = await axios.get('http://localhost:8001/api/admin/stats/trends', {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    )
-    
-    await axios.post(`/api/admin/users/${user.id}/status`, {
-      is_active: !user.is_active
     })
-    
-    ElMessage.success(`User ${action}ned successfully`)
-    fetchUsers() // Refresh list
-  } catch (error: any) {
-    if (error !== 'cancel') {
-      ElMessage.error('Operation failed')
+
+    const data = response.data
+    const dates = data.map((item: any) => item.date)
+    const bets = data.map((item: any) => item.total_bet)
+    const payouts = data.map((item: any) => item.total_payout)
+    const ggrs = data.map((item: any) => item.ggr)
+
+    chartOption.value = {
+      title: {
+        text: 'Betting & Revenue'
+      },
+      tooltip: {
+        trigger: 'axis'
+      },
+      legend: {
+        data: ['Total Bet', 'Total Payout', 'GGR']
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: dates
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          name: 'Total Bet',
+          type: 'line',
+          data: bets,
+          smooth: true,
+          itemStyle: { color: '#409EFF' }
+        },
+        {
+          name: 'Total Payout',
+          type: 'line',
+          data: payouts,
+          smooth: true,
+          itemStyle: { color: '#E6A23C' }
+        },
+        {
+          name: 'GGR',
+          type: 'bar',
+          data: ggrs,
+          itemStyle: { 
+             color: (params: any) => {
+                return params.value >= 0 ? '#67C23A' : '#F56C6C'
+             }
+          }
+        }
+      ]
     }
-  }
-}
-
-const openTransactionDialog = (user: any, type: 'deposit' | 'withdraw') => {
-  selectedUser.value = user
-  transactionType.value = type
-  transactionForm.amount = 100
-  transactionForm.description = ''
-  transactionDialogVisible.value = true
-}
-
-const submitTransaction = async () => {
-  if (transactionForm.amount <= 0) {
-    ElMessage.warning('Invalid amount')
-    return
-  }
-  
-  submitting.value = true
-  try {
-    await axios.post(`/api/admin/users/${selectedUser.value.id}/balance`, {
-      amount: transactionForm.amount,
-      type: transactionType.value,
-      description: transactionForm.description
-    })
-    
-    ElMessage.success(`${transactionType.value === 'deposit' ? 'Deposit' : 'Withdrawal'} successful`)
-    transactionDialogVisible.value = false
-    fetchUsers()
-    fetchStats()
-  } catch (error: any) {
-    ElMessage.error(error.response?.data?.message || 'Transaction failed')
+  } catch (error) {
+    console.error('Error fetching trends:', error)
+    ElMessage.error('Failed to load trends')
   } finally {
-    submitting.value = false
+    loadingTrends.value = false
   }
 }
 
-const logout = async () => {
-  await authStore.logout()
-  router.push('/login')
+const fetchGameStats = async () => {
+  loadingGames.value = true
+  try {
+    const response = await axios.get('/admin/stats/games')
+
+    const data = response.data
+    const pieData = data.map((item: any) => ({
+      name: item.game_type,
+      value: item.total_bet
+    }))
+
+    pieOption.value = {
+      title: {
+        text: 'Total Bet by Game',
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/>{b} : ${c} ({d}%)'
+      },
+      legend: {
+        orient: 'vertical',
+        left: 'left'
+      },
+      series: [
+        {
+          name: 'Total Bet',
+          type: 'pie',
+          radius: '50%',
+          data: pieData,
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          }
+        }
+      ]
+    }
+  } catch (error) {
+    console.error('Error fetching game stats:', error)
+    ElMessage.error('Failed to load game stats')
+  } finally {
+    loadingGames.value = false
+  }
+}
+
+const formatMoney = (amount: number | string) => {
+  return Number(amount).toFixed(2)
+}
+
+const getGGRClass = (ggr: number) => {
+  return ggr >= 0 ? 'text-success' : 'text-danger'
 }
 
 onMounted(() => {
   fetchStats()
-  fetchUsers()
+  fetchTrends()
+  fetchGameStats()
 })
 </script>
 
 <style scoped>
-.admin-dashboard {
-  min-height: 100vh;
-  background-color: #f5f7fa;
+.dashboard-container {
+  padding: 20px;
 }
 
-.header {
-  background-color: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  padding: 0 20px;
+.section-title {
+  margin: 20px 0;
+  font-size: 18px;
+  color: #606266;
 }
-
-.logo {
-  font-size: 20px;
-  font-weight: bold;
-  color: #409EFF;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.mb-4 {
-  margin-bottom: 20px;
-}
-
-.stat-value {
-  font-size: 24px;
-  font-weight: bold;
-  text-align: center;
-}
-
-.text-success { color: #67C23A; }
-.text-danger { color: #F56C6C; }
 
 .card-header {
   display: flex;
@@ -336,18 +331,22 @@ onMounted(() => {
   align-items: center;
 }
 
-.search-box {
-  width: 300px;
-}
-
-.balance {
-  font-family: monospace;
+.card-value {
+  font-size: 24px;
   font-weight: bold;
+  text-align: center;
+  padding: 10px 0;
 }
 
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
+.status-ok {
+  color: #67c23a;
+}
+
+.text-success {
+  color: #67c23a;
+}
+
+.text-danger {
+  color: #f56c6c;
 }
 </style>

@@ -6,6 +6,10 @@ return [
     'allowed_origins' => [
         'http://localhost:3000',
         'http://localhost:8001',
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://127.0.0.1:5173',
+        'http://127.0.0.1:5174',
         'https://gofun.cloud',
         'https://www.gofun.cloud',
         'https://admin.gofun.cloud',

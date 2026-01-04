@@ -24,4 +24,9 @@ class Transaction extends Model
         'balance_before' => 'decimal:4',
         'balance_after' => 'decimal:4',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

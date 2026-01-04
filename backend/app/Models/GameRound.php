@@ -23,4 +23,9 @@ class GameRound extends Model
         'bet_amount' => 'decimal:4',
         'payout_amount' => 'decimal:4',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

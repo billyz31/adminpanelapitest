@@ -18,7 +18,7 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'http://nginx', // Docker 環境下指向 nginx 服務
+        target: 'http://127.0.0.1:8003', // Docker 環境下指向 Laravel 服務 (使用 IP 避免 IPv6 解析問題)
         changeOrigin: true,
         secure: false,
       }

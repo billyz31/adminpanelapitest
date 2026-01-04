@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import ApiTester from './components/ApiTester.vue'
+import GlobalHealthCheck from './components/GlobalHealthCheck.vue'
 </script>
 
 <template>
   <router-view></router-view>
-  <ApiTester />
+  <!-- <ApiTester /> -->
+  <GlobalHealthCheck />
 </template>
 
 <style>
