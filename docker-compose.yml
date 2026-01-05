@@ -47,8 +47,7 @@ services:
       context: .
       dockerfile: Dockerfile.nginx
     volumes:
-      #   - ./nginx.conf:/etc/nginx/nginx.conf
-      #   - ./frontend/dist:/usr/share/nginx/html
+      - ./frontend/dist:/usr/share/nginx/html
       - ./admin-frontend/dist:/usr/share/nginx/admin
     labels:
       - "traefik.enable=true"
@@ -60,13 +59,13 @@ services:
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
       - "traefik.http.routers.frontend.service=frontend-svc"
       - "traefik.http.services.frontend-svc.loadbalancer.server.port=80"
-      # Admin (Temporarily disabled)
-      # - "traefik.http.routers.admin.rule=Host(`admin.gofun.cloud`)"
-      # - "traefik.http.routers.admin.entrypoints=websecure"
-      # - "traefik.http.routers.admin.tls=true"
-      # - "traefik.http.routers.admin.tls.certresolver=letsencrypt"
-      # - "traefik.http.routers.admin.service=admin-svc"
-      # - "traefik.http.services.admin-svc.loadbalancer.server.port=8080"
+      # Admin
+      - "traefik.http.routers.admin.rule=Host(`admin.gofun.cloud`)"
+      - "traefik.http.routers.admin.entrypoints=websecure"
+      - "traefik.http.routers.admin.tls=true"
+      - "traefik.http.routers.admin.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.admin.service=admin-svc"
+      - "traefik.http.services.admin-svc.loadbalancer.server.port=80"
     depends_on:
       - laravel
     networks:
