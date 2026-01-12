@@ -3,8 +3,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.http
-    volumes:
-      - ./backend:/var/www/html
     environment:
       DB_CONNECTION: pgsql
       DB_HOST: postgres
@@ -46,9 +44,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.nginx
-    volumes:
-      - ./frontend/dist:/usr/share/nginx/html
-      - ./admin-frontend/dist:/usr/share/nginx/admin
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=coolify"
